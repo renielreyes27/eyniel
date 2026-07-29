@@ -1,6 +1,6 @@
 const startBtn = document.getElementById("startBtn");
 const navLinks = document.querySelectorAll(".nav-links a");
-const revealItems = document.querySelectorAll(".reveal");
+const revealItems = document.querySelectorAll(".reveal-up, .reveal-down, .reveal-left, .reveal-right, .reveal-scale, .reveal-fade");
 const heartContainer = document.querySelector(".heart-container");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const maxHeartCount = 12;
@@ -17,11 +17,58 @@ const memoryModalImage = document.querySelector(".memory-modal__image");
 const memoryModalTitle = document.getElementById("memory-modal-title");
 const memoryModalDescription = document.getElementById("memory-modal-description");
 const memoryModalDate = document.getElementById("memory-modal-date");
+const memoryModalPrev = document.querySelector(".memory-modal__nav--prev");
+const memoryModalNext = document.querySelector(".memory-modal__nav--next");
+const memoryModalCounter = document.querySelector(".memory-modal__counter");
+const memoryModalThumbnails = document.querySelector(".memory-modal__thumbnails");
+let currentGallery = [];
+let currentGalleryIndex = 0;
+let touchStartX = 0;
+let touchEndX = 0;
 let activeTrigger = null;
 let galleryObserver = null;
 let particleInterval = null;
 let parallaxFrame = null;
 let supportsPassive = false;
+
+// CENTRALIZED GALLERY DATA
+// Maps the memory card index (0-5) to its specific array of images
+const galleries = {
+    0: [
+        "images/memory1.jpg",
+        "images/memory1-2.jpg",
+        "images/memory1-3.jpg",
+        "images/memory1-4.jpg"
+    ],
+    1: [
+        "images/memory2.jpg",
+        "images/memory2-2.jpg",
+        "images/memory2-3.jpg"
+
+    ],
+    2: [
+        "images/memory3.jpg",
+        "images/memory3-2.jpg",
+        "images/memory3-3.jpg"
+    ],
+    3: [
+        "images/memory4.jpg",
+        "images/memory4-2.jpg",
+        "images/memory4-3.jpg"
+    ],
+    4: [
+        "images/memory5.jpg",
+        "images/memory5-2.jpg",
+        "images/memory5-3.jpg"
+    ],
+    5: [
+        "images/memory6.jpg",
+        "images/memory6-2.jpg",
+        "images/memory6-3.jpg",
+        "images/memory6-4.jpg",
+        "images/memory6-5.jpg"
+    ]
+};
 
 try {
     const opts = Object.defineProperty({}, "passive", {
@@ -71,7 +118,7 @@ if (window.IntersectionObserver) {
                 }
             });
         },
-        { threshold: 0.18 }
+        { threshold: 0.15 }
     );
 
     revealItems.forEach((item) => {
@@ -189,7 +236,93 @@ function createBurstHeart(x, y) {
     });
 }
 
-function openMemoryModal(triggerButton) {
+function preloadImage(index) {
+    if (index >= 0 && index < currentGallery.length) {
+        const img = new Image();
+        img.src = currentGallery[index];
+    }
+}
+
+function updateGalleryUI() {
+    if (currentGallery.length > 1) {
+        if (memoryModalPrev) memoryModalPrev.hidden = false;
+        if (memoryModalNext) memoryModalNext.hidden = false;
+        if (memoryModalCounter) {
+            memoryModalCounter.hidden = false;
+            memoryModalCounter.textContent = `${currentGalleryIndex + 1} / ${currentGallery.length}`;
+        }
+        if (memoryModalThumbnails) {
+            memoryModalThumbnails.hidden = false;
+            memoryModalThumbnails.innerHTML = '';
+            currentGallery.forEach((imgSrc, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'memory-modal__thumbnail-btn';
+                if (index === currentGalleryIndex) btn.classList.add('active');
+
+                const thumbImg = document.createElement('img');
+                thumbImg.src = imgSrc;
+                thumbImg.alt = `Thumbnail ${index + 1}`;
+                thumbImg.className = 'memory-modal__thumbnail-img';
+                thumbImg.setAttribute('loading', 'lazy');
+
+                btn.appendChild(thumbImg);
+                btn.addEventListener('click', () => changeModalImage(index));
+                memoryModalThumbnails.appendChild(btn);
+            });
+
+            const activeBtn = memoryModalThumbnails.children[currentGalleryIndex];
+            if (activeBtn) {
+                activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+    } else {
+        if (memoryModalPrev) memoryModalPrev.hidden = true;
+        if (memoryModalNext) memoryModalNext.hidden = true;
+        if (memoryModalCounter) memoryModalCounter.hidden = true;
+        if (memoryModalThumbnails) memoryModalThumbnails.hidden = true;
+    }
+
+    preloadImage(currentGalleryIndex - 1);
+    preloadImage(currentGalleryIndex + 1);
+}
+
+function changeModalImage(newIndex) {
+    if (newIndex === currentGalleryIndex || newIndex < 0 || newIndex >= currentGallery.length) return;
+
+    currentGalleryIndex = newIndex;
+    if (memoryModalImage) {
+        memoryModalImage.classList.add('fade-out');
+        setTimeout(() => {
+            memoryModalImage.setAttribute('src', currentGallery[currentGalleryIndex]);
+            memoryModalImage.classList.remove('fade-out');
+            updateGalleryUI();
+        }, 300);
+    }
+}
+
+function nextModalImage() {
+    if (currentGallery.length <= 1) return;
+    const newIndex = (currentGalleryIndex + 1) % currentGallery.length;
+    changeModalImage(newIndex);
+}
+
+function prevModalImage() {
+    if (currentGallery.length <= 1) return;
+    const newIndex = (currentGalleryIndex - 1 + currentGallery.length) % currentGallery.length;
+    changeModalImage(newIndex);
+}
+
+function handleSwipe() {
+    const swipeThreshold = 50;
+    if (touchEndX < touchStartX - swipeThreshold) {
+        nextModalImage();
+    } else if (touchEndX > touchStartX + swipeThreshold) {
+        prevModalImage();
+    }
+}
+
+// UPDATE: Accept index parameter to load the correct gallery
+function openMemoryModal(triggerButton, index) {
     const modalElements = [
         memoryModalBackdrop,
         memoryModal,
@@ -210,7 +343,6 @@ function openMemoryModal(triggerButton) {
         return;
     }
 
-    // Read existing DOM values from the card using attributes and textContent
     const cardImage = card.querySelector(".memory-card__image");
     const cardTitle = card.querySelector(".memory-card__title");
     const cardCaption = card.querySelector(".memory-card__caption");
@@ -221,7 +353,6 @@ function openMemoryModal(triggerButton) {
         return;
     }
 
-    // Read the literal attribute so file:// keeps paths such as images/memory1.jpg.
     const imageSrc = cardImage.getAttribute("src");
     const imageAlt = cardImage.getAttribute("alt");
     const titleText = cardTitle.textContent.trim();
@@ -233,8 +364,12 @@ function openMemoryModal(triggerButton) {
         return;
     }
 
+    // UPDATE: Load gallery from centralized object based on card index, fallback to single image
+    currentGallery = (galleries[index] && galleries[index].length > 0) ? galleries[index] : [imageSrc];
+    currentGalleryIndex = 0;
+
     // Populate modal elements BEFORE removing hidden state
-    memoryModalImage.setAttribute("src", imageSrc);
+    memoryModalImage.setAttribute("src", currentGallery[0]);
     memoryModalImage.setAttribute("alt", imageAlt);
     memoryModalTitle.textContent = titleText;
     memoryModalDescription.textContent = captionText;
@@ -247,6 +382,8 @@ function openMemoryModal(triggerButton) {
             memoryModalDate.hidden = true;
         }
     }
+
+    updateGalleryUI();
 
     // Finally make modal visible and lock scroll, then move focus to close
     activeTrigger = triggerButton;
@@ -289,17 +426,26 @@ function trapModalFocus(event) {
 }
 
 function onDocumentKeyDown(event) {
-    if (event.key === "Escape" && memoryModalBackdrop && !memoryModalBackdrop.hidden) {
-        event.preventDefault();
-        closeMemoryModal();
+    if (memoryModalBackdrop && !memoryModalBackdrop.hidden) {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closeMemoryModal();
+        } else if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            prevModalImage();
+        } else if (event.key === "ArrowRight") {
+            event.preventDefault();
+            nextModalImage();
+        }
     }
 }
 
-memoryCardTriggers.forEach((trigger) => {
+// UPDATE: Added 'index' parameter to the forEach loop to pass it into openMemoryModal
+memoryCardTriggers.forEach((trigger, index) => {
     trigger.addEventListener("click", (event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         createBurstHeart(rect.left + rect.width / 2, rect.top + rect.height / 2 + window.scrollY);
-        openMemoryModal(event.currentTarget);
+        openMemoryModal(event.currentTarget, index); // Pass index here
     });
     trigger.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -308,6 +454,31 @@ memoryCardTriggers.forEach((trigger) => {
         }
     });
 });
+
+if (memoryModalPrev) {
+    memoryModalPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
+        prevModalImage();
+    });
+}
+
+if (memoryModalNext) {
+    memoryModalNext.addEventListener('click', (e) => {
+        e.stopPropagation();
+        nextModalImage();
+    });
+}
+
+if (memoryModalImage) {
+    memoryModalImage.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, supportsPassive ? { passive: true } : false);
+
+    memoryModalImage.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, supportsPassive ? { passive: true } : false);
+}
 
 memoryUnlockButtons.forEach((unlock) => {
     const secretMessage = unlock.parentElement.querySelector(".memory-secret-message");
@@ -385,13 +556,95 @@ function onVisibilityChange() {
 
 document.addEventListener("visibilitychange", onVisibilityChange);
 
+// --- BACKGROUND MUSIC LOGIC ---
+const bgMusic = document.getElementById("bg-music");
+let musicFadeInterval = null;
+let hasUserInteracted = false;
+let isGalleryVisibleFlag = false;
+
+if (bgMusic) {
+    bgMusic.volume = 0; // Start at volume 0 for fade-in
+}
+
+// Function to smoothly fade audio in or out
+function fadeAudio(targetVolume, duration = 2500) {
+    if (!bgMusic) return;
+    
+    clearInterval(musicFadeInterval);
+    
+    const steps = 50;
+    const stepTime = duration / steps;
+    const volumeStep = (targetVolume - bgMusic.volume) / steps;
+
+    musicFadeInterval = setInterval(() => {
+        let newVolume = bgMusic.volume + volumeStep;
+        
+        // Check if we reached the target volume
+        if ((volumeStep > 0 && newVolume >= targetVolume) || 
+            (volumeStep < 0 && newVolume <= targetVolume)) {
+            bgMusic.volume = targetVolume;
+            clearInterval(musicFadeInterval);
+            
+            // Pause if fading out completely
+            if (targetVolume === 0) {
+                bgMusic.pause();
+            }
+        } else {
+            bgMusic.volume = newVolume;
+        }
+    }, stepTime);
+}
+
+function playGalleryMusic() {
+    if (!bgMusic || !hasUserInteracted) return;
+    
+    // Play the audio and fade in to 100% volume
+    bgMusic.play().then(() => {
+        fadeAudio(1.0); 
+    }).catch(error => {
+        console.warn("Autoplay blocked:", error);
+    });
+}
+
+function pauseGalleryMusic() {
+    if (!bgMusic) return;
+    // Fade out to 0% volume
+    fadeAudio(0);
+}
+
+// Handle browser autoplay policies by waiting for first user interaction
+function handleFirstInteraction() {
+    if (!hasUserInteracted) {
+        hasUserInteracted = true;
+        
+        // If the gallery is already visible when they interact, start the music
+        if (isGalleryVisibleFlag) {
+            playGalleryMusic();
+        }
+        
+        // Remove the listeners after the first interaction
+        document.removeEventListener("click", handleFirstInteraction);
+        document.removeEventListener("keydown", handleFirstInteraction);
+        document.removeEventListener("touchstart", handleFirstInteraction);
+    }
+}
+
+document.addEventListener("click", handleFirstInteraction);
+document.addEventListener("keydown", handleFirstInteraction);
+document.addEventListener("touchstart", handleFirstInteraction);
+// ------------------------------
+
 if (window.IntersectionObserver && gallerySection) {
     galleryObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
+                isGalleryVisibleFlag = true;
                 startGalleryParticles();
+                playGalleryMusic();
             } else {
+                isGalleryVisibleFlag = false;
                 stopGalleryParticles();
+                pauseGalleryMusic();
             }
         });
     }, { threshold: 0.15 });
