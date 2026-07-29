@@ -7,6 +7,7 @@
 
     <title>Our Memories ❤️</title>
 
+    <script>document.documentElement.classList.add('js');</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -15,7 +16,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body id="top">
+
+    <header class="site-nav">
+        <div class="container nav-inner">
+            <a href="#top" class="brand">Our Memories</a>
+            <nav class="nav-links" aria-label="Primary navigation">
+                <a href="#story">Our Story</a>
+                <a href="#journey">Chapters</a>
+                <a href="#gallery">Gallery</a>
+                <a href="#letter">Letter</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="heart-container" aria-hidden="true"></div>
 
     <!-- HERO -->
 
@@ -23,7 +38,7 @@
 
         <div class="overlay"></div>
 
-        <div class="hero-content">
+        <div class="hero-content reveal">
 
             <h1>Hi, lovee ❤️</h1>
 
@@ -36,7 +51,7 @@
                 how lucky I am to have someone like you.
             </p>
 
-            <button id="startBtn">
+            <button id="startBtn" type="button">
                 Start Our Journey
             </button>
 
@@ -50,7 +65,7 @@
 
     <!-- STORY -->
 
-    <section class="story" id="story">
+    <section class="story reveal" id="story">
 
         <div class="container">
 
@@ -79,7 +94,7 @@
 
     <!-- JOURNEY -->
 
-    <section class="journey">
+    <section class="journey reveal" id="journey">
 
         <div class="container">
 
@@ -127,7 +142,7 @@
 
     <!-- GALLERY -->
 
-    <section class="gallery">
+    <section class="gallery reveal" id="gallery">
 
         <div class="container">
 
@@ -135,9 +150,9 @@
 
             <div class="gallery-grid">
 
-                <img src="images/memory1.jpg" alt="">
-                <img src="images/memory2.jpg" alt="">
-                <img src="images/memory3.jpg" alt="">
+                <img src="images/memory1.jpg" alt="A favorite memory together." loading="lazy">
+                <img src="images/memory2.jpg" alt="A favorite memory together." loading="lazy">
+                <img src="images/memory3.jpg" alt="A favorite memory together." loading="lazy">
 
             </div>
 
@@ -147,7 +162,7 @@
 
     <!-- LETTER -->
 
-    <section class="letter">
+    <section class="letter reveal" id="letter">
 
         <div class="letter-box">
 
