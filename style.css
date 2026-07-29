@@ -234,30 +234,356 @@ section[id] {
 
 .gallery{
     text-align:center;
+    position:relative;
 }
 
-.gallery h2{
-    margin-bottom:40px;
+.gallery-header{
+    margin-bottom:24px;
 }
 
-.gallery-grid{
+.gallery-intro{
+    max-width:760px;
+    margin:auto;
+    opacity:.8;
+    line-height:1.8;
+}
+
+.gallery-particles{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:1;
+}
+
+.memory-timeline{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:24px;
+    list-style:none;
+    padding:0;
+    margin:0;
+    position:relative;
+    z-index:2;
 }
 
-.gallery-grid img{
+.memory-item{
+    display:flex;
+    align-items:flex-start;
+}
+
+.memory-card{
     width:100%;
-    border-radius:20px;
-    transition:.3s;
-    cursor:pointer;
+    background:#171717;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:24px;
+    overflow:hidden;
+    transition:transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.gallery-grid img:hover{
+.memory-card:hover,
+.memory-card:focus-within{
+    transform:translateY(-6px);
+    border-color:rgba(255,79,129,0.45);
+    box-shadow:0 20px 50px rgba(0,0,0,0.25);
+}
+
+.memory-card__surface{
+    position:relative;
+    display:grid;
+    gap:18px;
+    padding:18px;
+}
+
+.memory-card__image-wrap{
+    position:relative;
+    overflow:hidden;
+    border-radius:20px;
+    min-height:220px;
+    background:#000;
+    transition:transform 0.35s ease;
+}
+
+.memory-card__image{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    object-position:center;
+    transition:transform 0.4s ease;
+}
+
+.memory-card:hover .memory-card__image,
+.memory-card:focus-within .memory-card__image{
     transform:scale(1.05);
 }
 
-/* LETTER */
+.memory-card__content{
+    text-align:left;
+}
+
+.memory-card__title{
+    font-size:1.25rem;
+    margin-bottom:10px;
+}
+
+.memory-card__caption{
+    line-height:1.7;
+    opacity:.88;
+}
+
+.memory-card__date{
+    display:none;
+}
+
+.memory-card__trigger,
+.memory-unlock,
+.memory-modal__close{
+    border:none;
+    border-radius:999px;
+    background:rgba(255,79,129,0.95);
+    color:#fff;
+    cursor:pointer;
+    padding:12px 18px;
+    font-size:0.95rem;
+    transition:transform 0.2s ease, background 0.2s ease;
+}
+
+.memory-card__trigger:hover,
+.memory-card__trigger:focus,
+.memory-unlock:hover,
+.memory-unlock:focus,
+.memory-modal__close:hover,
+.memory-modal__close:focus{
+    transform:translateY(-2px);
+    background:#ff2e6f;
+}
+
+.memory-unlock{
+    margin:0 18px 18px;
+    width:calc(100% - 36px);
+}
+
+.memory-secret-message{
+    margin:0 18px 18px;
+    color:#ffcad4;
+    font-size:0.95rem;
+}
+
+.memory-modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(7,7,7,0.72);
+    backdrop-filter:blur(13px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+    z-index:100;
+}
+
+.memory-modal-backdrop[hidden]{
+    display:none;
+}
+
+.memory-modal{
+    background:#111;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:28px;
+    max-width:900px;
+    max-height:calc(100vh - 60px);
+    width:100%;
+    overflow-y:auto;
+    box-shadow:0 25px 60px rgba(0,0,0,0.45);
+}
+
+.memory-modal__inner{
+    position:relative;
+    display:grid;
+    gap:24px;
+    padding:24px;
+}
+
+.memory-modal__close{
+    position:absolute;
+    top:18px;
+    right:18px;
+    z-index:2;
+}
+
+.memory-modal__media{
+    width:100%;
+}
+
+.memory-modal__image-wrap{
+    position:relative;
+    width:100%;
+    height:clamp(240px,55vh,520px);
+    overflow:hidden;
+    border-radius:22px;
+    background:#000;
+}
+
+.memory-modal__image{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:center;
+    display:block;
+}
+
+.memory-modal__details{
+    text-align:left;
+}
+
+.memory-modal__details h3{
+    margin-bottom:16px;
+    color:#fff;
+}
+
+.memory-modal__details p{
+    line-height:1.85;
+    opacity:.9;
+    color:#fff;
+}
+
+.memory-modal__details time{
+    display:block;
+    margin-top:12px;
+    opacity:.7;
+}
+
+.memory-modal__details time[hidden]{
+    display:none;
+}
+
+.gallery-particle,
+.burst-heart{
+    position:absolute;
+    pointer-events:none;
+    will-change:transform, opacity;
+}
+
+.gallery-particle{
+    width:8px;
+    height:8px;
+    background:rgba(255,79,129,0.18);
+    border-radius:50%;
+    filter:blur(1px);
+    transition:transform 1s ease, opacity 1s ease;
+}
+
+.burst-heart{
+    width:14px;
+    height:14px;
+    background:var(--accent);
+    transform:rotate(45deg);
+    border-radius:3px 3px 0 0;
+    transition:transform 0.45s ease, opacity 0.45s ease;
+}
+
+.burst-heart::before,
+.burst-heart::after{
+    content:"";
+    position:absolute;
+    width:14px;
+    height:14px;
+    background:var(--accent);
+    border-radius:50%;
+    top:-7px;
+    left:0;
+}
+
+.burst-heart::after{
+    left:7px;
+}
+
+@media(max-width:768px){
+
+    .nav-inner{
+        padding:16px 6%;
+        flex-direction:column;
+        align-items:center;
+        gap:10px;
+    }
+
+    .nav-links{
+        gap:16px;
+        justify-content:center;
+        text-align:center;
+    }
+
+    .hero h1{
+        font-size:40px;
+    }
+
+    .subtitle{
+        font-size:22px;
+    }
+
+    .story-text{
+        font-size:24px;
+    }
+
+    .letter-box{
+        padding:30px;
+    }
+
+    section{
+        padding:80px 6%;
+    }
+
+    .gallery-particles{
+        display:none;
+    }
+
+    .memory-timeline{
+        gap:18px;
+    }
+
+    .memory-card__surface{
+        padding:16px;
+    }
+
+    .memory-card__image-wrap{
+        min-height:200px;
+    }
+
+    .memory-modal-backdrop{
+        padding:18px;
+    }
+
+    .memory-modal__inner{
+        padding:18px;
+        gap:18px;
+    }
+
+    .memory-modal{
+        max-height:calc(100vh - 36px);
+    }
+
+    .memory-modal__image-wrap{
+        height:clamp(220px,48vh,420px);
+    }
+}
+
+@media(prefers-reduced-motion: reduce){
+    .memory-card,
+    .memory-card__trigger,
+    .memory-unlock,
+    .memory-modal__close,
+    .memory-card__image{
+        transition:none !important;
+    }
+
+    .gallery-particles,
+    .burst-heart,
+    .memory-card:hover .memory-card__image,
+    .memory-card:focus-within .memory-card__image{
+        animation:none !important;
+        transform:none !important;
+    }
+}
 
 .letter{
     background:#181818;
