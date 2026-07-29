@@ -146,19 +146,127 @@
 
         <div class="container">
 
-            <h2>Favorite Memories 📸</h2>
-
-            <div class="gallery-grid">
-
-                <img src="images/memory1.jpg" alt="A favorite memory together." loading="lazy">
-                <img src="images/memory2.jpg" alt="A favorite memory together." loading="lazy">
-                <img src="images/memory3.jpg" alt="A favorite memory together." loading="lazy">
-
+            <div class="gallery-header">
+                <h2>Favorite Memories 📸</h2>
+                <p class="gallery-intro">Tap any memory card to experience the moment in a cinematic view.</p>
             </div>
 
-        </div>
+            <div class="gallery-particles" aria-hidden="true"></div>
 
+            <ul class="memory-timeline">
+                <li class="memory-item">
+                    <article class="memory-card">
+                        <div class="memory-card__surface">
+                            <div class="memory-card__image-wrap">
+                                <img src="images/memory1.jpg" alt="A favorite memory together." loading="lazy" class="memory-card__image">
+                            </div>
+                            <div class="memory-card__content">
+                                <h3 class="memory-card__title">First Memory / Beginning</h3>
+                                <p class="memory-card__caption">A simple moment that became the beginning of countless beautiful memories.</p>
+                                <time class="memory-card__date" hidden></time>
+                            </div>
+                            <button class="memory-card__trigger" type="button" aria-label="Open First Memory / Beginning">View memory</button>
+                        </div>
+                    </article>
+                </li>
+                <li class="memory-item">
+                    <article class="memory-card">
+                        <div class="memory-card__surface">
+                            <div class="memory-card__image-wrap">
+                                <img src="images/memory2.jpg" alt="A happy moment together." loading="lazy" class="memory-card__image">
+                            </div>
+                            <div class="memory-card__content">
+                                <h3 class="memory-card__title">Happy Moment</h3>
+                                <p class="memory-card__caption">Your smile has always been one of my favorite views.</p>
+                                <time class="memory-card__date" hidden></time>
+                            </div>
+                            <button class="memory-card__trigger" type="button" aria-label="Open Happy Moment">View memory</button>
+                        </div>
+                    </article>
+                </li>
+                <li class="memory-item">
+                    <article class="memory-card">
+                        <div class="memory-card__surface">
+                            <div class="memory-card__image-wrap">
+                                <img src="images/memory3.jpg" alt="A together moment shared." loading="lazy" class="memory-card__image">
+                            </div>
+                            <div class="memory-card__content">
+                                <h3 class="memory-card__title">Together Moment</h3>
+                                <p class="memory-card__caption">Every moment feels more special when I'm spending it with you.</p>
+                                <time class="memory-card__date" hidden></time>
+                            </div>
+                            <button class="memory-card__trigger" type="button" aria-label="Open Together Moment">View memory</button>
+                        </div>
+                    </article>
+                </li>
+                <li class="memory-item">
+                    <article class="memory-card">
+                        <div class="memory-card__surface">
+                            <div class="memory-card__image-wrap">
+                                <img src="images/memory4.jpg" alt="A fun random memory." loading="lazy" class="memory-card__image">
+                            </div>
+                            <div class="memory-card__content">
+                                <h3 class="memory-card__title">Fun / Random Memory</h3>
+                                <p class="memory-card__caption">The little moments we never planned became the ones we remember the most.</p>
+                                <time class="memory-card__date" hidden></time>
+                            </div>
+                            <button class="memory-card__trigger" type="button" aria-label="Open Fun or Random Memory">View memory</button>
+                        </div>
+                    </article>
+                </li>
+                <li class="memory-item">
+                    <article class="memory-card">
+                        <div class="memory-card__surface">
+                            <div class="memory-card__image-wrap">
+                                <img src="images/memory5.jpg" alt="A special day memory." loading="lazy" class="memory-card__image">
+                            </div>
+                            <div class="memory-card__content">
+                                <h3 class="memory-card__title">Special Day</h3>
+                                <p class="memory-card__caption">A day worth remembering, because it was another chapter of us.</p>
+                                <time class="memory-card__date" hidden></time>
+                            </div>
+                            <button class="memory-card__trigger" type="button" aria-label="Open Special Day">View memory</button>
+                        </div>
+                    </article>
+                </li>
+                <li class="memory-item memory-item--secret">
+                    <article class="memory-card">
+                        <div class="memory-card__surface">
+                            <div class="memory-card__image-wrap">
+                                <img src="images/memory6.jpg" alt="A favorite meaningful memory." loading="lazy" class="memory-card__image">
+                            </div>
+                            <div class="memory-card__content">
+                                <h3 class="memory-card__title">Favorite / Most Meaningful</h3>
+                                <p class="memory-card__caption">Out of all the memories we made, this will always have a special place in my heart.</p>
+                                <time class="memory-card__date" hidden></time>
+                            </div>
+                            <button class="memory-card__trigger" type="button" aria-label="Open Favorite or Most Meaningful Memory">View memory</button>
+                        </div>
+                        <button class="memory-unlock" type="button">Unlock special memory</button>
+                        <div class="memory-secret-message" role="status" aria-live="polite" hidden>You unlocked a special memory. ❤️</div>
+                    </article>
+                </li>
+            </ul>
+        </div>
     </section>
+
+    <div class="memory-modal-backdrop" hidden aria-hidden="true">
+        <div class="memory-modal" role="dialog" aria-modal="true" aria-labelledby="memory-modal-title" aria-describedby="memory-modal-description">
+            <div class="memory-modal__inner">
+                <button class="memory-modal__close" type="button">Close</button>
+                <div class="memory-modal__media">
+                    <div class="memory-modal__image-wrap">
+                        <img alt="" class="memory-modal__image">
+                    </div>
+                </div>
+                <div class="memory-modal__details">
+                    <h3 id="memory-modal-title"></h3>
+                    <p id="memory-modal-description"></p>
+                    <time id="memory-modal-date" hidden></time>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- LETTER -->
 
