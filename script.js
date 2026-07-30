@@ -812,3 +812,85 @@ if (openHeartBtn && envelopeObj && envelopeWrapper && letterBoxContainer) {
         }, 750);
     });
 }
+
+// --- RELATIONSHIP COUNTER LOGIC ---
+const relationshipStart = new Date("2026-05-27T00:00:00");
+
+const counterYearsEl = document.getElementById("counterYears");
+const counterMonthsEl = document.getElementById("counterMonths");
+const counterDaysEl = document.getElementById("counterDays");
+const counterHoursEl = document.getElementById("counterHours");
+const counterMinutesEl = document.getElementById("counterMinutes");
+const counterSecondsEl = document.getElementById("counterSeconds");
+
+function setCounterValue(element, newValue) {
+    if (!element) return;
+    const strVal = String(newValue);
+    if (element.textContent !== strVal) {
+        element.textContent = strVal;
+        if (!prefersReducedMotion) {
+            element.classList.remove("value-pop");
+            void element.offsetWidth;
+            element.classList.add("value-pop");
+        }
+    }
+}
+
+function updateRelationshipCounter() {
+    if (!counterYearsEl || !counterMonthsEl || !counterDaysEl || !counterHoursEl || !counterMinutesEl || !counterSecondsEl) {
+        return;
+    }
+
+    const now = new Date();
+
+    if (isNaN(relationshipStart.getTime()) || now < relationshipStart) {
+        setCounterValue(counterYearsEl, "0");
+        setCounterValue(counterMonthsEl, "0");
+        setCounterValue(counterDaysEl, "0");
+        setCounterValue(counterHoursEl, "00");
+        setCounterValue(counterMinutesEl, "00");
+        setCounterValue(counterSecondsEl, "00");
+        return;
+    }
+
+    let years = now.getFullYear() - relationshipStart.getFullYear();
+    let months = now.getMonth() - relationshipStart.getMonth();
+    let days = now.getDate() - relationshipStart.getDate();
+    let hours = now.getHours() - relationshipStart.getHours();
+    let minutes = now.getMinutes() - relationshipStart.getMinutes();
+    let seconds = now.getSeconds() - relationshipStart.getSeconds();
+
+    if (seconds < 0) {
+        seconds += 60;
+        minutes--;
+    }
+    if (minutes < 0) {
+        minutes += 60;
+        hours--;
+    }
+    if (hours < 0) {
+        hours += 24;
+        days--;
+    }
+    if (days < 0) {
+        const previousMonthDate = new Date(now.getFullYear(), now.getMonth(), 0);
+        days += previousMonthDate.getDate();
+        months--;
+    }
+    if (months < 0) {
+        months += 12;
+        years--;
+    }
+
+    const pad = (num) => String(num).padStart(2, "0");
+
+    setCounterValue(counterYearsEl, years);
+    setCounterValue(counterMonthsEl, months);
+    setCounterValue(counterDaysEl, days);
+    setCounterValue(counterHoursEl, pad(hours));
+    setCounterValue(counterMinutesEl, pad(minutes));
+    setCounterValue(counterSecondsEl, pad(seconds));
+}
+
+updateRelationshipCounter();
+setInterval(updateRelationshipCounter, 1000);
