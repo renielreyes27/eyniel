@@ -298,7 +298,7 @@
         <div class="memory-modal" role="dialog" aria-modal="true" aria-labelledby="memory-modal-title"
             aria-describedby="memory-modal-description">
             <div class="memory-modal__inner">
-                <button class="memory-modal__close" type="button">Close</button>
+                <button class="memory-modal__close" type="button" aria-label="Close">&times;</button>
                 <div class="memory-modal__media">
                     <div class="memory-modal__image-wrap">
                         <img alt="" class="memory-modal__image">
@@ -323,43 +323,84 @@
 
     <section class="letter" id="letter">
 
-        <div class="letter-box">
+        <div class="container">
 
-            <h2 class="reveal-up">To My Love,</h2>
+            <!-- Interactive Envelope Card -->
+            <div class="envelope-wrapper reveal-up" id="envelopeWrapper">
+                <div class="envelope-card">
+                    <h2 class="envelope-title">One Last Thing...</h2>
 
-            <p class="reveal-up" style="--delay: 100ms;">
+                    <div class="envelope-container" aria-hidden="true">
+                        <div class="envelope-glow"></div>
+                        <div class="envelope" id="envelopeObj">
+                            <div class="envelope-back"></div>
+                            <div class="envelope-paper"></div>
+                            <div class="envelope-front"></div>
+                            <div class="envelope-flap"></div>
+                            <div class="envelope-seal">❤️</div>
+                        </div>
+                    </div>
 
-                Thank you for every laugh, every late-night conversation, every random moment, and every memory we've
-                shared.
+                    <p class="envelope-subtitle">
+                        I wrote something from my heart. Open it whenever you're ready.
+                    </p>
 
-                <br><br>
+                    <button id="openHeartBtn" class="open-heart-btn" type="button" aria-expanded="false">
+                        Open My Heart ❤️
+                    </button>
+                </div>
+            </div>
 
-                I honestly never thought I'd end up making something like this, but you became someone worth making it
-                for.
+            <!-- Letter Box (Hidden Initially) -->
+            <div id="letterBoxContainer" class="letter-box-container" hidden>
+                <div class="letter-box">
 
-                <br><br>
+                    <h2 class="reveal-up">To My Love,</h2>
 
-                I just wanted to create a little place that we could always come back to, a place where we can look back
-                at our memories and smile, no matter how much time has passed.
+                    <p class="reveal-up" style="--delay: 100ms;">
 
-                <br><br>
+                        Thank you for every laugh, every late-night conversation, every random moment, and every memory we've
+                        shared.
 
-                This website may not be perfect, but I hope every picture and every message here reminds you of how much
-                you mean to me.
+                        <br><br>
 
-                <br><br>
+                        I honestly never thought I'd end up making something like this, but you became someone worth making it
+                        for.
 
-                No matter what life brings us, I hope we continue choosing each other, making new memories, and laughing
-                about the little things together.
+                        <br><br>
 
-                <br><br>
+                        I just wanted to create a little place that we could always come back to, a place where we can look back
+                        at our memories and smile, no matter how much time has passed.
 
-                Thank you for staying, for loving me, and for making my days so much brighter.
+                        <br><br>
 
-                <br><br>
+                        This website may not be perfect, but I hope every picture and every message here reminds you of how much
+                        you mean to me.
 
-                I love you, always. ❤️
-            </p>
+                        <br><br>
+
+                        No matter what life brings us, I hope we continue choosing each other, making new memories, and laughing
+                        about the little things together.
+
+                        <br><br>
+
+                        Thank you for staying, for loving me, and for making my days so much brighter.
+
+                        <br><br>
+
+                        I love you, always. ❤️
+                    </p>
+
+                    <!-- Bonus Finale Message -->
+                    <div class="letter-footer-note">
+                        <div class="letter-divider"></div>
+                        <p class="letter-note-text">Made with love.</p>
+                        <p class="letter-note-sub">For Mads.</p>
+                        <span class="letter-note-heart">❤️</span>
+                    </div>
+
+                </div>
+            </div>
 
         </div>
 

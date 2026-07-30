@@ -52,18 +52,37 @@ body{
     display:flex;
     gap:24px;
     flex-wrap:wrap;
+    position:relative;
 }
 
 .nav-links a{
-    color:#fff;
+    color:rgba(255, 255, 255, 0.65);
     text-decoration:none;
     font-size:0.95rem;
-    transition:color 0.25s ease;
+    transition:color 0.25s ease, opacity 0.25s ease, text-shadow 0.25s ease;
 }
 
 .nav-links a:hover,
-.nav-links a:focus-visible{
-    color:var(--accent);
+.nav-links a:focus-visible,
+.nav-links a.active{
+    color:#ffffff;
+    opacity:1;
+    text-shadow:0 0 8px rgba(255, 79, 129, 0.4);
+}
+
+.nav-indicator{
+    position:absolute;
+    top:0;
+    left:0;
+    height:3px;
+    width:0;
+    border-radius:3px;
+    background:linear-gradient(90deg, var(--accent), var(--accent-soft));
+    box-shadow:0 0 10px rgba(255, 79, 129, 0.7), 0 0 4px rgba(255, 122, 162, 0.5);
+    transition:transform 380ms cubic-bezier(0.4, 0, 0.2, 1), width 380ms cubic-bezier(0.4, 0, 0.2, 1), opacity 350ms ease;
+    pointer-events:none;
+    opacity:0;
+    will-change:transform, width, opacity;
 }
 
 .heart-container{
@@ -120,7 +139,8 @@ body{
     opacity:.9;
 }
 
-button{
+/* Scoped to hero section button so global styles don't bleed into modal buttons */
+.hero button{
     margin-top:40px;
     padding:16px 45px;
     border:none;
@@ -132,8 +152,8 @@ button{
     transition:transform 0.3s ease, background 0.3s ease;
 }
 
-button:hover,
-button:focus-visible{
+.hero button:hover,
+.hero button:focus-visible{
     transform:translateY(-4px);
     background:#ff2e6f;
 }
@@ -358,8 +378,7 @@ section[id] {
 }
 
 .memory-card__trigger,
-.memory-unlock,
-.memory-modal__close{
+.memory-unlock{
     border:none;
     border-radius:999px;
     background:rgba(255,79,129,0.95);
@@ -373,9 +392,7 @@ section[id] {
 .memory-card__trigger:hover,
 .memory-card__trigger:focus,
 .memory-unlock:hover,
-.memory-unlock:focus,
-.memory-modal__close:hover,
-.memory-modal__close:focus{
+.memory-unlock:focus{
     transform:translateY(-2px);
     background:#ff2e6f;
 }
@@ -429,7 +446,32 @@ section[id] {
     position:absolute;
     top:18px;
     right:18px;
-    z-index:2;
+    margin:0;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    border:1px solid rgba(255, 255, 255, 0.18);
+    background:rgba(0, 0, 0, 0.45);
+    backdrop-filter:blur(8px);
+    color:#fff;
+    font-size:1.4rem;
+    line-height:1;
+    cursor:pointer;
+    z-index:10;
+    transition:transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.memory-modal__close:hover,
+.memory-modal__close:focus-visible{
+    transform:scale(1.08);
+    background:rgba(255, 79, 129, 0.85);
+    border-color:rgba(255, 79, 129, 0.5);
+    box-shadow:0 0 12px rgba(255, 79, 129, 0.5);
+    outline:none;
 }
 
 .memory-modal__media{
@@ -775,6 +817,7 @@ footer{
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    margin: 0; /* Explicitly reset margin for perfect vertical centering */
     background: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
@@ -847,4 +890,251 @@ footer{
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+/* --- INTERACTIVE ENVELOPE EXPERIENCE --- */
+
+.envelope-wrapper {
+    max-width: 800px;
+    margin: auto;
+    transition: opacity 600ms ease, transform 600ms ease;
+}
+
+.envelope-wrapper.fade-out {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+    pointer-events: none;
+}
+
+.envelope-card {
+    background: #222;
+    padding: 50px 30px;
+    border-radius: 25px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.envelope-title {
+    font-size: clamp(28px, 4vw, 42px);
+    margin-bottom: 24px;
+    color: #fff;
+}
+
+.envelope-subtitle {
+    font-size: clamp(16px, 2.5vw, 19px);
+    color: #ffd5e4;
+    max-width: 500px;
+    margin: 0 auto 30px;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.envelope-container {
+    position: relative;
+    width: 220px;
+    height: 140px;
+    margin: 35px auto 40px;
+    perspective: 800px;
+}
+
+.envelope-glow {
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle, rgba(255, 79, 129, 0.35) 0%, rgba(255, 79, 129, 0) 70%);
+    filter: blur(15px);
+    pointer-events: none;
+    border-radius: 50%;
+}
+
+.envelope {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    animation: floatEnvelope 3.5s ease-in-out infinite;
+}
+
+@keyframes floatEnvelope {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.envelope-back {
+    position: absolute;
+    inset: 0;
+    background: #1a1a1a;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.envelope-paper {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 10px;
+    bottom: 10px;
+    background: #fff0f5;
+    border-radius: 8px;
+    transition: transform 650ms cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+.envelope.is-open .envelope-paper {
+    transform: translateY(-55px);
+}
+
+.envelope-front {
+    position: absolute;
+    inset: 0;
+    background: #282828;
+    clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
+    border-radius: 12px;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: var(--accent);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 3;
+}
+
+.envelope.is-open .envelope-flap {
+    transform: rotateX(180deg);
+    z-index: 0;
+}
+
+.envelope-seal {
+    position: absolute;
+    top: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.3rem;
+    z-index: 4;
+    transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.envelope.is-open .envelope-seal {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+}
+
+.open-heart-btn {
+    border: none;
+    border-radius: 50px;
+    background: var(--accent);
+    color: white;
+    font-size: 1.1rem;
+    padding: 16px 40px;
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 10px 30px rgba(255, 79, 129, 0.35);
+    animation: pulseBtn 3s ease-in-out infinite;
+}
+
+@keyframes pulseBtn {
+    0%, 100% {
+        box-shadow: 0 10px 30px rgba(255, 79, 129, 0.35);
+    }
+    50% {
+        box-shadow: 0 12px 38px rgba(255, 79, 129, 0.6);
+    }
+}
+
+.open-heart-btn:hover,
+.open-heart-btn:focus-visible {
+    transform: translateY(-3px) scale(1.03);
+    background: #ff2e6f;
+    box-shadow: 0 15px 35px rgba(255, 79, 129, 0.5);
+}
+
+.floating-envelope-heart {
+    position: absolute;
+    pointer-events: none;
+    font-size: 1.1rem;
+    opacity: 0.6;
+    animation: floatUpHeart 1.2s ease-out forwards;
+    z-index: 10;
+}
+
+@keyframes floatUpHeart {
+    0% {
+        opacity: 0.7;
+        transform: translate(-50%, 0) scale(0.8);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -70px) scale(1.2);
+    }
+}
+
+.letter-box-container {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 800ms ease-out, transform 800ms ease-out;
+}
+
+.letter-box-container.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Bonus Finale Note */
+.letter-footer-note {
+    margin-top: 45px;
+    padding-top: 30px;
+    text-align: center;
+}
+
+.letter-divider {
+    width: 60px;
+    height: 2px;
+    background: rgba(255, 79, 129, 0.4);
+    margin: 0 auto 24px;
+    border-radius: 2px;
+}
+
+.letter-note-text {
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+}
+
+.letter-note-sub {
+    font-size: 0.95rem;
+    color: var(--text-soft);
+    margin-bottom: 8px;
+    opacity: 0.85;
+}
+
+.letter-note-heart {
+    font-size: 1.2rem;
+    display: inline-block;
+    animation: float 2.5s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .envelope,
+    .envelope-wrapper,
+    .envelope-flap,
+    .envelope-paper,
+    .open-heart-btn,
+    .letter-box-container {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
 }

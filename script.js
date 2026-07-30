@@ -97,12 +97,99 @@ if (startBtn) {
     });
 }
 
+// --- ANIMATED ACTIVE SECTION INDICATOR LOGIC ---
+const navLinksContainer = document.querySelector(".nav-links");
+let navIndicator = null;
+let activeSectionId = null;
+
+if (navLinksContainer) {
+    navIndicator = document.createElement("span");
+    navIndicator.className = "nav-indicator";
+    navLinksContainer.appendChild(navIndicator);
+}
+
+const targetSections = ["story", "journey", "gallery", "letter"]
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+const navLinksMap = {};
+navLinks.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (href && href.startsWith("#")) {
+        navLinksMap[href.substring(1)] = link;
+    }
+});
+
+function updateNavIndicator(activeLink) {
+    if (!navIndicator) return;
+
+    if (!activeLink) {
+        navIndicator.style.opacity = "0";
+        navLinks.forEach((l) => l.classList.remove("active"));
+        return;
+    }
+
+    navLinks.forEach((l) => {
+        if (l === activeLink) {
+            l.classList.add("active");
+        } else {
+            l.classList.remove("active");
+        }
+    });
+
+    const left = activeLink.offsetLeft;
+    const top = activeLink.offsetTop + activeLink.offsetHeight + 2;
+    const width = activeLink.offsetWidth;
+
+    navIndicator.style.opacity = "1";
+    navIndicator.style.width = `${width}px`;
+    navIndicator.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+}
+
+function checkNavState() {
+    if ((window.scrollY || window.pageYOffset) < 150) {
+        if (activeSectionId !== null) {
+            activeSectionId = null;
+            updateNavIndicator(null);
+        }
+    } else if (activeSectionId && navLinksMap[activeSectionId]) {
+        updateNavIndicator(navLinksMap[activeSectionId]);
+    }
+}
+
+if (window.IntersectionObserver && targetSections.length > 0) {
+    const navSectionObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    activeSectionId = entry.target.id;
+                    if (navLinksMap[activeSectionId] && (window.scrollY || window.pageYOffset) >= 150) {
+                        updateNavIndicator(navLinksMap[activeSectionId]);
+                    }
+                }
+            });
+            checkNavState();
+        },
+        {
+            rootMargin: "-20% 0px -40% 0px",
+            threshold: 0.15
+        }
+    );
+
+    targetSections.forEach((section) => navSectionObserver.observe(section));
+}
+
 navLinks.forEach((link) => {
     link.addEventListener("click", (event) => {
         event.preventDefault();
         const anchor = event.currentTarget.getAttribute("href");
         const target = document.querySelector(anchor);
         if (target) {
+            const sectionId = anchor.replace("#", "");
+            if (navLinksMap[sectionId]) {
+                activeSectionId = sectionId;
+                updateNavIndicator(navLinksMap[sectionId]);
+            }
             smoothScrollTo(target);
         }
     });
@@ -531,6 +618,7 @@ function resetParallax() {
 }
 
 function onScroll() {
+    checkNavState();
     if (prefersReducedMotion) return;
     if (parallaxFrame) {
         cancelAnimationFrame(parallaxFrame);
@@ -655,6 +743,7 @@ if (window.IntersectionObserver && gallerySection) {
 
 window.addEventListener("scroll", onScroll, supportsPassive ? { passive: true } : false);
 window.addEventListener("resize", () => {
+    checkNavState();
     if (prefersReducedMotion || window.matchMedia("(max-width: 768px)").matches || window.matchMedia("(pointer: coarse)").matches) {
         resetParallax();
     } else {
@@ -663,3 +752,63 @@ window.addEventListener("resize", () => {
 }, supportsPassive ? { passive: true } : false);
 
 startHearts();
+
+// --- INTERACTIVE ENVELOPE LOGIC ---
+const openHeartBtn = document.getElementById("openHeartBtn");
+const envelopeObj = document.getElementById("envelopeObj");
+const envelopeWrapper = document.getElementById("envelopeWrapper");
+const letterBoxContainer = document.getElementById("letterBoxContainer");
+
+if (openHeartBtn && envelopeObj && envelopeWrapper && letterBoxContainer) {
+    openHeartBtn.addEventListener("click", () => {
+        openHeartBtn.disabled = true;
+        openHeartBtn.setAttribute("aria-expanded", "true");
+
+        if (prefersReducedMotion) {
+            envelopeWrapper.hidden = true;
+            letterBoxContainer.hidden = false;
+            letterBoxContainer.classList.add("is-visible");
+            return;
+        }
+
+        // 1. Envelope flap opens first
+        envelopeObj.classList.add("is-open");
+
+        // 2. Wait ~300ms before paper animation & spawning 3 floating hearts
+        setTimeout(() => {
+            const container = envelopeObj.parentElement;
+            if (container) {
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement("span");
+                        heart.className = "floating-envelope-heart";
+                        heart.textContent = "❤️";
+                        heart.style.left = `${35 + Math.random() * 30}%`;
+                        heart.style.top = "20px";
+                        container.appendChild(heart);
+
+                        heart.addEventListener("animationend", () => heart.remove());
+                    }, i * 120);
+                }
+            }
+        }, 300);
+
+        // 3. Fade out envelope wrapper and smoothly reveal letter box
+        setTimeout(() => {
+            envelopeWrapper.classList.add("fade-out");
+            setTimeout(() => {
+                envelopeWrapper.style.display = "none";
+                letterBoxContainer.hidden = false;
+
+                requestAnimationFrame(() => {
+                    letterBoxContainer.classList.add("is-visible");
+                    const letterHeading = letterBoxContainer.querySelector("h2");
+                    if (letterHeading) {
+                        letterHeading.tabIndex = -1;
+                        letterHeading.focus();
+                    }
+                });
+            }, 450);
+        }, 750);
+    });
+}
